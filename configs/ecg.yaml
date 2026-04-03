@@ -1,0 +1,41 @@
+# GenMed — ECG Generator Config (TimeGAN)
+# Run: python experiments/train_ecg.py --config configs/ecg.yaml
+
+data:
+  data_dir: data/raw/ecg
+  segment_length: 256          # samples per segment (256 ≈ 0.7s at 360Hz)
+  lead: 0                      # 0=MLII, 1=V-lead
+  max_segments_per_record: 300
+  # records: ["100", "101"]    # uncomment to restrict to a subset
+
+preprocessing:
+  augment: true                # bandpass filter + z-score normalisation
+  bandpass_low: 0.5
+  bandpass_high: 40.0
+
+model:
+  seq_len: 256
+  input_dim: 1
+  hidden_dim: 24
+  noise_dim: 8
+  num_layers: 3
+  ae_epochs: 200
+  sup_epochs: 200
+  joint_epochs: 600
+  batch_size: 128
+  lr: 0.001
+  gamma: 1.0
+  eta: 0.1
+  log_every: 50
+
+generate:
+  n_samples: 1000
+
+output:
+  checkpoint_dir: checkpoints/ecg
+  synthetic_path: data/processed/ecg_synthetic.npy
+
+evaluation:
+  run_morphology: true
+  run_mmd: true
+  run_privacy: true

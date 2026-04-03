@@ -1,0 +1,38 @@
+# GenMed — Clinical Notes Generator Config (GPT-2 + LoRA)
+# Run: python experiments/train_clinical.py --config configs/clinical.yaml
+
+data:
+  cache_dir: data/raw/clinical
+  min_length: 200
+  # specialties: ["Cardiology", "Surgery"]   # uncomment to filter
+
+model:
+  model_name: gpt2             # gpt2 | gpt2-medium | gpt2-large
+  use_lora: false              # set true to enable LoRA (saves memory)
+  lora_r: 8
+  lora_alpha: 32
+  lora_dropout: 0.05
+  max_length: 512
+  num_train_epochs: 3
+  per_device_batch: 4
+  gradient_accumulation_steps: 8
+  learning_rate: 0.00005
+  warmup_steps: 100
+  use_specialty_prefix: true
+  output_dir: checkpoints/clinical
+
+generate:
+  n_samples: 50
+  max_new_tokens: 300
+  temperature: 0.9
+  top_p: 0.92
+  top_k: 50
+  # prompt: "<CARDIOLOGY>"     # uncomment for conditional generation
+
+output:
+  checkpoint_dir: checkpoints/clinical
+  synthetic_path: data/processed/clinical_synthetic.txt
+
+evaluation:
+  run_text_quality: true
+  run_privacy: true

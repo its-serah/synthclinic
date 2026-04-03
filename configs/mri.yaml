@@ -1,0 +1,44 @@
+# GenMed — MRI Generator Config (VAE + DDPM)
+# Run: python experiments/train_mri.py --config configs/mri.yaml
+#
+# MRI dataset: download IXI-T1.tar from https://brain-development.org/ixi-dataset/
+# and extract to data/raw/mri/IXI/
+# If no data is found, synthetic Gaussian phantom data is used automatically.
+
+data:
+  data_dir: data/raw/mri
+  slice_axis: 2                # 0=sagittal, 1=coronal, 2=axial
+  slice_range: [0.25, 0.75]   # fraction of depth slices to use
+  max_volumes: 20
+
+model:
+  # VAE
+  img_size: 64                 # must be divisible by 16; use 128 for higher quality
+  vae_base_channels: 32
+  latent_dim: 128
+  vae_beta: 1.0                # KL weight; try 4.0 for disentangled VAE
+  vae_epochs: 100
+  vae_lr: 0.001
+
+  # DDPM
+  diffusion_steps: 1000
+  ddpm_epochs: 200
+  ddpm_lr: 0.0003
+  ddpm_hidden_dim: 512
+  ddpm_depth: 6
+
+  # Shared
+  batch_size: 32
+  log_every: 20
+
+generate:
+  n_samples: 100
+  sampling_steps: 100          # DDIM-style: fewer steps = faster but slightly lower quality
+
+output:
+  checkpoint_dir: checkpoints/mri
+  synthetic_path: data/processed/mri_synthetic.npy
+
+evaluation:
+  run_mmd: true
+  run_privacy: true
